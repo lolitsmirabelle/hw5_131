@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(tidymodels)
+library(ggplot2)
 library(ISLR)
 library(ISLR2)
 library(tidyverse)
@@ -20,21 +21,24 @@ tidymodels_prefer()
 ## Question 1
 
 ```{r}
-install.packages("janitor")
 library(janitor)
 
 pokemon_og <- read.csv("~/Downloads/homework-5/data/pokemon.csv")
 
 pokemon <- clean_names(pokemon_og)
 ```
-The clean_names() function cleans names of the data frame
+The clean_names() function cleans names of the data frame and the resulting names are unique and consist only of the _ character, numbers, and letters. It is useful because the data frame is more organized and clean. 
 
 ## Question 2 
 
-You can also embed plots, for example:
+```{r}
+pokemon %>% 
+  ggplot(aes(x = type_1)) +
+  geom_bar()
+```
+There are 18 classes. There are a few Pokemon with only a few Pokemon in their class, such as Flying and Fairy. 
 
 ```{r}
 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
