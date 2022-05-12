@@ -1,0 +1,40 @@
+---
+title: "homework 5"
+output: html_document
+date: '2022-05-11'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidymodels)
+library(ISLR)
+library(ISLR2)
+library(tidyverse)
+library(glmnet)
+tidymodels_prefer()
+```
+
+## Question 1
+
+```{r}
+install.packages("janitor")
+library(janitor)
+
+pokemon_og <- read.csv("~/Downloads/homework-5/data/pokemon.csv")
+
+pokemon <- clean_names(pokemon_og)
+```
+The clean_names() function cleans names of the data frame
+
+## Question 2 
+
+You can also embed plots, for example:
+
+```{r}
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
