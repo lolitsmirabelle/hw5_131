@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(tidymodels)
+library(tidyverse)
 library(ggplot2)
 library(ISLR)
 library(ISLR2)
@@ -36,9 +37,15 @@ pokemon %>%
   ggplot(aes(x = type_1)) +
   geom_bar()
 ```
+
 There are 18 classes. There are a few Pokemon with only a few Pokemon in their class, such as Flying and Fairy. 
 
 ```{r}
+classes <- c('Bug', 'Fire', 'Grass', 'Normal', 'Water', 'Psychic')
 
+pokemon <- filter(pokemon, type_1 %in% classes)
+
+pokemon$type_1 <- factor(pokemon$type_1)
+pokemon$legendary <- factor(pokemon$legendary)
 ```
 
