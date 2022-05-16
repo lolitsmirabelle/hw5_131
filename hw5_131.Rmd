@@ -126,9 +126,21 @@ We get an accuracy of 32.97% which means that the training data did not have a g
 
 ##  Question 8 
 ```{r}
+# overall ROC AUC
+augment(pokemon_final_fit, new_data = pokemon_test)%>%
+  roc_auc(type_1, estimate = c(.pred_Fire, .pred_Bug, .pred_Water, .pred_Grass, 
+                                 .pred_Normal, .pred_Psychic))
+
+# create plots of the different ROC curves, one per level of the outcome
 augment(pokemon_final_fit, new_data = pokemon_test) %>%
   roc_curve(type_1, estimate = c(.pred_Fire, .pred_Bug, .pred_Water, .pred_Grass, 
                                  .pred_Normal, .pred_Psychic)) %>%
   autoplot()
+
+# heat map of the confusion matrix
+augment(pokemon_final_fit, new_data = pokemon_test) %>%
+  conf_mat(truth = type_1, estimate = .pred_class) %>%
+  autoplot(type="heatmap")
 ```
 
+From this assignment, we can conclude that the model did not perform too well. The ROC AUC was not too high, and the higher the AUC, the better the performance of the model at distinguishing between the positive and negative classes. The Pokemon type that was the best at predicting was Bug type. The Pokemon type that was the worst at predicting was Psychic type. 
