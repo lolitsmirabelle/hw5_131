@@ -10,12 +10,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(tidymodels)
-library(tidyverse)
+library(ISLR) 
+library(ISLR2) 
 library(ggplot2)
-library(ISLR)
-library(ISLR2)
-library(tidyverse)
-library(glmnet)
+library(discrim)
+library(poissonreg)
+library(corrr)
+library(klaR) # for naive bayes
 tidymodels_prefer()
 ```
 
@@ -49,3 +50,47 @@ pokemon$type_1 <- factor(pokemon$type_1)
 pokemon$legendary <- factor(pokemon$legendary)
 ```
 
+
+## Question 3
+```{r}
+set.seed(2424)
+
+pokemon_split <- initial_split(pokemon, prop = 0.80,
+                                strata = type_1)
+
+pokemon_train <- training(pokemon_split) 
+
+pokemon_test <- testing(pokemon_split)
+
+pokemon_folds <- vfold_cv(pokemon_train, v = 5)
+```
+
+
+## Question 4
+```{r}
+pokemon_recipe <- recipe(type_1 ~ ., data = pokemon%>%dplyr::select(type_1,hp:legendary))%>%
+  step_dummy(c("legendary", "generation"))%>%
+  step_center(all_predictors())%>%
+  step_scale(all_predictors())
+```
+
+
+## Question 5
+```{r}
+pokemon_spec <- 
+  multinom_reg(penalty = tune(), mixture = 0) %>% 
+  set_engine("glmnet")
+
+pokemon_workflow <- workflow() %>% 
+  add_recipe(pokemon_recipe) %>% 
+  add_model(pokemon_spec)
+
+penalty_grid <- grid_regular(penalty(range = c(-5, 5)), levels = 10)
+
+mixture_grid <- grid_regular(mixture(range = c(0, 1)), levels = 10)
+```
+
+We will be fitting 500 models. 
+
+
+## Question 6

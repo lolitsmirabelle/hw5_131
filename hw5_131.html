@@ -383,35 +383,33 @@ pre code {
 ## x dplyr::filter()  masks stats::filter()
 ## x dplyr::lag()     masks stats::lag()
 ## x recipes::step()  masks stats::step()
-## • Search for functions across packages at https://www.tidymodels.org/find/</code></pre>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
-<pre><code>## ✓ readr   2.1.2     ✓ forcats 0.5.1
-## ✓ stringr 1.4.0</code></pre>
-<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## x readr::col_factor() masks scales::col_factor()
-## x purrr::discard()    masks scales::discard()
-## x dplyr::filter()     masks stats::filter()
-## x stringr::fixed()    masks recipes::fixed()
-## x dplyr::lag()        masks stats::lag()
-## x readr::spec()       masks yardstick::spec()</code></pre>
-<pre class="r"><code>library(ggplot2)
-library(ISLR)
-library(ISLR2)</code></pre>
+## • Dig deeper into tidy modeling with R at https://www.tmwr.org</code></pre>
+<pre class="r"><code>library(ISLR) 
+library(ISLR2) </code></pre>
 <pre><code>## 
 ## Attaching package: &#39;ISLR2&#39;</code></pre>
 <pre><code>## The following objects are masked from &#39;package:ISLR&#39;:
 ## 
 ##     Auto, Credit</code></pre>
-<pre class="r"><code>library(tidyverse)
-library(glmnet)</code></pre>
-<pre><code>## Loading required package: Matrix</code></pre>
+<pre class="r"><code>library(ggplot2)
+library(discrim)</code></pre>
 <pre><code>## 
-## Attaching package: &#39;Matrix&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:tidyr&#39;:
+## Attaching package: &#39;discrim&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dials&#39;:
 ## 
-##     expand, pack, unpack</code></pre>
-<pre><code>## Loaded glmnet 4.1-4</code></pre>
+##     smoothness</code></pre>
+<pre class="r"><code>library(poissonreg)
+library(corrr)
+library(klaR) # for naive bayes</code></pre>
+<pre><code>## Loading required package: MASS</code></pre>
+<pre><code>## 
+## Attaching package: &#39;MASS&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ISLR2&#39;:
+## 
+##     Boston</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     select</code></pre>
 <pre class="r"><code>tidymodels_prefer()</code></pre>
 <div id="question-1" class="section level2">
 <h2>Question 1</h2>
@@ -439,6 +437,44 @@ pokemon &lt;- filter(pokemon, type_1 %in% classes)
 
 pokemon$type_1 &lt;- factor(pokemon$type_1)
 pokemon$legendary &lt;- factor(pokemon$legendary)</code></pre>
+</div>
+<div id="question-3" class="section level2">
+<h2>Question 3</h2>
+<pre class="r"><code>set.seed(2424)
+
+pokemon_split &lt;- initial_split(pokemon, prop = 0.80,
+                                strata = type_1)
+
+pokemon_train &lt;- training(pokemon_split) 
+
+pokemon_test &lt;- testing(pokemon_split)
+
+pokemon_folds &lt;- vfold_cv(pokemon_train, v = 5)</code></pre>
+</div>
+<div id="question-4" class="section level2">
+<h2>Question 4</h2>
+<pre class="r"><code>pokemon_recipe &lt;- recipe(type_1 ~ ., data = pokemon%&gt;%dplyr::select(type_1,hp:legendary))%&gt;%
+  step_dummy(c(&quot;legendary&quot;, &quot;generation&quot;))%&gt;%
+  step_center(all_predictors())%&gt;%
+  step_scale(all_predictors())</code></pre>
+</div>
+<div id="question-5" class="section level2">
+<h2>Question 5</h2>
+<pre class="r"><code>pokemon_spec &lt;- 
+  multinom_reg(penalty = tune(), mixture = 0) %&gt;% 
+  set_engine(&quot;glmnet&quot;)
+
+pokemon_workflow &lt;- workflow() %&gt;% 
+  add_recipe(pokemon_recipe) %&gt;% 
+  add_model(pokemon_spec)
+
+penalty_grid &lt;- grid_regular(penalty(range = c(-5, 5)), levels = 10)
+
+mixture_grid &lt;- grid_regular(mixture(range = c(0, 1)), levels = 10)</code></pre>
+<p>We will be fitting 500 models.</p>
+</div>
+<div id="question-6" class="section level2">
+<h2>Question 6</h2>
 </div>
 
 
