@@ -94,3 +94,41 @@ We will be fitting 500 models.
 
 
 ## Question 6
+```{r}
+tune_res <- tune_grid(
+  pokemon_workflow,
+  resamples = pokemon_folds, 
+  grid = penalty_grid
+)
+
+autoplot(tune_res)
+```
+
+From the graph above, we notice that smaller values produce better accuracy and ROC AUC. 
+
+
+## Question 7 
+```{r}
+collect_metrics(tune_res)
+
+best_penalty <- select_best(tune_res, metric = "roc_auc")
+best_penalty
+
+pokemon_final <- finalize_workflow(pokemon_workflow, best_penalty)
+
+pokemon_final_fit <- fit(pokemon_final, data = pokemon_train)
+
+augment(pokemon_final_fit, new_data = pokemon_test) %>%
+  accuracy(truth = type_1, estimate = .pred_class)
+```
+We get an accuracy of 32.97% which means that the training data did not have a good performance on the testing set. 
+
+
+##  Question 8 
+```{r}
+augment(pokemon_final_fit, new_data = pokemon_test) %>%
+  roc_curve(type_1, estimate = c(.pred_Fire, .pred_Bug, .pred_Water, .pred_Grass, 
+                                 .pred_Normal, .pred_Psychic)) %>%
+  autoplot()
+```
+
